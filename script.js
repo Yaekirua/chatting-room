@@ -10,6 +10,11 @@ const drone = new ScaleDrone(CLIENT_ID, {
 });
 
 let members = [];
+let messages = [];
+
+if (localStorage.getItem('chatMessages')) {
+  messages = JSON.parse(localStorage.getItem('chatMessages'));
+}
 
 drone.on('open', error => {
   if (error) {
@@ -44,9 +49,15 @@ drone.on('open', error => {
   room.on('data', (text, member) => {
     if (member) {
       addMessageToListDOM(text, member);
+      messages.push({ text, member });
+      localStorage.setItem('chatMessages', JSON.stringify(messages));
     } else {
       // Message is from server
     }
+  });
+
+  messages.forEach(message => {
+    addMessageToListDOM(message.text, message.member);
   });
 });
 
